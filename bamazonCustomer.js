@@ -12,6 +12,7 @@ var connection = mysql.createConnection({
 connection.connect(function (error) {
     if (error) throw error;
     console.log("connected as ID " + connection.threadId);
+    console.log("--**Welcome to Bamazon!!**--");
 });
 
 function displayTable() {
@@ -66,7 +67,7 @@ function shop() {
                             ],
                             function (error) {
                                 if (error) throw error;
-                                console.log("You total cost is " + (chosenItem.price * answer.amount) + ". Your order has been placed and will arrive in 5-7 days. Thank you for shopping with Bamazon!\n");
+                                console.log("Your total cost is " + (chosenItem.price * answer.amount) + ". Your order has been placed and will arrive in 5-7 days. Thank you for shopping with Bamazon!\n");
                                 start();
                             });
                     } else {
