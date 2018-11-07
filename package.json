@@ -4,6 +4,7 @@
   "description": "homework 12",
   "main": "bamazonCustomer.js",
   "dependencies": {
+    "console.table": "^0.10.0",
     "inquirer": "^6.2.0",
     "mysql": "^2.16.0"
   },

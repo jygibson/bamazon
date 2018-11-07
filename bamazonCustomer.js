@@ -1,5 +1,6 @@
 var inquirer = require("inquirer");
 var mysql = require("mysql");
+var cTable = require("console.table")
 var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -11,17 +12,18 @@ var connection = mysql.createConnection({
 connection.connect(function (error) {
     if (error) throw error;
     console.log("connected as ID " + connection.threadId);
-    begin();
 });
 
-function begin() {
+function displayTable() {
     connection.query("SELECT * FROM products", function (err, results) {
         if (err) throw err;
-        console.log("---*Welcome to Bamazon*---");
-        console.log("Item # " + "|" + "   Product Name   " + "|" + "   Department   " + "|" + "   Price per Unit   " + "|" + " # in Stock ")
-        for (let i = 0; i < results.length; i++) {
-            console.log("   " + results[i].item_id + "   |   " + results[i].product_name + "  |   " + results[i].department_name + "  |  " + results[i].price + "  |   " + results[i].stock_quantity);
-        };
+        console.table(results);
+        shop();
+    });
+};
+
+function shop() {
+    connection.query("SELECT * FROM products", function (err, results) {
         inquirer
             .prompt([
                 {
@@ -64,13 +66,19 @@ function begin() {
                             ],
                             function (error) {
                                 if (error) throw error;
-                                console.log("You total cost is " + (chosenItem.price * answer.amount) + ". Your order has been placed and will arrive in 5-7 days. Thank you for shopping with Bamazon!")
+                                console.log("You total cost is " + (chosenItem.price * answer.amount) + ". Your order has been placed and will arrive in 5-7 days. Thank you for shopping with Bamazon!\n");
+                                start();
                             });
                     } else {
-                        console.log("We're sorry, we only have " + chosenItem.stock_quantity + " in stock. Please try again.")
+                        console.log("We're sorry, we only have " + chosenItem.stock_quantity + " in stock. Please try again.\n")
+                        start();
                     }
-
                 })
-    }
-    )
+    });
 };
+
+function start() {
+    displayTable();
+};
+
+start();
