@@ -15,65 +15,62 @@ connection.connect(function (error) {
 });
 
 function begin() {
-    connection.query("SELECT * FROM products", function(err, results) {
+    connection.query("SELECT * FROM products", function (err, results) {
         if (err) throw err;
         console.log("---*Welcome to Bamazon*---");
-        console.log("Item # " + "|" + "   Product Name   " + "|" + "   Department   " + "|" + "   Price per Unit   " + "|" +" # in Stock ")
+        console.log("Item # " + "|" + "   Product Name   " + "|" + "   Department   " + "|" + "   Price per Unit   " + "|" + " # in Stock ")
         for (let i = 0; i < results.length; i++) {
             console.log("   " + results[i].item_id + "   |   " + results[i].product_name + "  |   " + results[i].department_name + "  |  " + results[i].price + "  |   " + results[i].stock_quantity);
         };
-    })
-purchase();
-};
+        inquirer
+            .prompt([
+                {
+                    name: "item",
+                    type: "input",
+                    message: "What item number would you like to purchase?",
+                    validate: function (value) {
+                        if (isNaN(value) === false) {
+                            return true;
+                        }
+                        return false;
+                    }
+                },
+                {
+                    name: "amount",
+                    type: "input",
+                    message: "how many units would you like to purchase?",
+                    validate: function (value) {
+                        if (isNaN(value) === false) {
+                            return true;
+                        }
+                        return false;
+                    }
+                }]).then(function (answer) {
+                    for (var i = 0; i < results.length; i++) {
+                        if (results[i].item_id == answer.item) {
+                            var chosenItem = results[i];
+                        }
+                    }
+                    if (chosenItem.stock_quantity >= parseInt(answer.amount)) {
+                        connection.query(
+                            "UPDATE products SET ? WHERE ? ",
+                            [
+                                {
+                                    stock_quantity: chosenItem.stock_quantity - answer.amount
+                                },
+                                {
+                                    item_id: chosenItem.item_id
+                                }
+                            ],
+                            function (error) {
+                                if (error) throw error;
+                                console.log("You total cost is " + (chosenItem.price * answer.amount) + ". Your order has been placed and will arrive in 5-7 days. Thank you for shopping with Bamazon!")
+                            });
+                    } else {
+                        console.log("We're sorry, we only have " + chosenItem.stock_quantity + " in stock. Please try again.")
+                    }
 
-function purchase(){
-    inquirer
-    .prompt([
-        {
-        name: "item",
-        type: "input",
-        message: "What item number would you like to purchase?",
-        validate: function(value) {
-            if (isNaN(value) === false) {
-              return true;
-            }
-            return false;
-          }
-        },
-        {
-        name: "amount",
-        type: "input",
-        message: "how many units would you like to purchase?",
-        validate: function(value) {
-            if (isNaN(value) === false) {
-              return true;
-            }
-            return false;
-          }
-        }]).then(function(answer){
-            if (answer.item && answer.amount){
-                return true;
-                updateItems();
-            }
-            else 
-            console.log("Please enter an item number to purchase.")
-        })
-    };
-
-    function updateItems(){
-        
+                })
     }
-
-
-//6. The app should then prompt users with two messages.
-
-//   * The first should ask them the ID of the product they would like to buy.
-  // * The second message should ask how many units of the product they would like to buy.
-
-//7. Once the customer has placed the order, your application should check if your store has enough of the product to meet the customer's request.
-
-  // * If not, the app should log a phrase like `Insufficient quantity!`, and then prevent the order from going through.
-
-//8. However, if your store _does_ have enough of the product, you should fulfill the customer's order.
-  // * This means updating the SQL database to reflect the remaining quantity.
-   //* Once the update goes through, show the customer the total cost of their purchase.
+    )
+};
