@@ -4,7 +4,12 @@ Bamazon uses node, node packages and MySQL.
 
 how to use Bamazon:
 
-to begin, open bamazon in the terminal and type in "node bamazonCustomer", 
+to begin, open bamazonCustomer.js in the terminal and install the necessary npms:
+npm install inquirer
+npm install mysql
+npm install console.table --save
+
+Once complete, type in "node bamazonCustomer", 
 
 ![begin](/images/begin.png)
 
